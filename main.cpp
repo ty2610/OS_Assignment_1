@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     //looked up basic user input
     //http://www.cplusplus.com/doc/tutorial/basic_io/
     cout << "Please enter the student's id number: ";
+    //make sure to do negative number checking
     while(!valid) {
         cin >> id;
         if(isANumber(&id,false)){
@@ -49,18 +50,38 @@ int main(int argc, char **argv) {
         if(isANumber(&assignmentCount,false)){
             valid = true;
         } else {
-            cout << "Sorry, I can not understand the answer " << assignmentCount << ". Please enter the student's id number: ";
+            cout << "Sorry, I can not understand the answer " << assignmentCount << ". Please how many assignments were graded: ";
         }
     }
 
+    valid = false;
+
+    s.id = stoi(id);
+    // https://stackoverflow.com/questions/7352099/stdstring-to-char
+    // this is used to switch between string and c*
+    s.f_name = &firstName[0u];
+    s.l_name = &lastName[0u];
+    s.n_assignments = stoi(assignmentCount);
     // had to google a way to change a string to dec, and for future swapping of string into double
     // http://www.cplusplus.com/reference/string/stoi/
+
+    double assignmentScore;
+
     for(int i=0; i<stoi(assignmentCount); i++){
-        cout << "Please enter grade for assignment " << i << ":";
+        cout << "Please enter grade for assignment " << i << ": ";
+        cin >> assignmentScore;
+        while(!valid) {
+            cin >> assignmentScore;
+            if(isANumber(&assignmentCount,true)){
+                valid = true;
+            } else {
+                cout << "Sorry, I can not understand the answer " << assignmentScore << ". Please enter the student's id number: ";
+            }
+        }
     }
 
 
-
+    //CalculateStudentAverage(,&avg);
     //cout << id << " " << firstName << " " << lastName << " " << assignmentCount << endl;
     return 0;
 }
