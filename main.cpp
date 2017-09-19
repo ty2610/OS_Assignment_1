@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
             cout << "Sorry, I can not understand the answer " << id << ". Please enter the student's id number: ";
         }
     }
-
+    cin.ignore();
     leadingZeros = leadingZeroCount(&id);
 
     valid = false;
@@ -123,9 +123,7 @@ bool isANumber(string *input, bool canHaveFrac){
             }
         }
     }
-    // the code should never get here, but it is a safe check to have
-    // to catch some one off logic.
-    if(stod(*input)<0){
+    if(*input==""){
         return false;
     }
     return true;
