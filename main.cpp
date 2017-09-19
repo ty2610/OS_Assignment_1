@@ -42,12 +42,13 @@ int main(int argc, char **argv) {
             cout << "Sorry, I can not understand the answer " << id << ". Please enter the student's id number: ";
         }
     }
-    cin.ignore();
     leadingZeros = leadingZeroCount(&id);
 
     valid = false;
 
-    //Do I need any name error checking?
+    // Do I need any name error checking?
+    // might want to make sure they put something in
+    // also might want to strip whitespace
     cout << "Please enter the student's first name: ";
     getline(cin, firstName);
     cout << "Please enter the student's last name: ";
