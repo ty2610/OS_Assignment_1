@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
@@ -15,6 +17,8 @@ void CalculateStudentAverage(void *object, double *avg);
 
 bool isANumber(string *input, bool canHaveFrac);
 
+string leadingZeroCount(string *number);
+
 int main(int argc, char **argv) {
     Student s;
     string id;
@@ -22,15 +26,16 @@ int main(int argc, char **argv) {
     string firstName;
     string lastName;
     double avg = 0.0;
+    string leadingZeros;
+    string assignmentScore;
     //boolean had an error so I looked up this site and realized that c/c++ uses bool
     //http://www.learncpp.com/cpp-tutorial/26-boolean-values/
     bool valid = false;
     //looked up basic user input
     //http://www.cplusplus.com/doc/tutorial/basic_io/
     cout << "Please enter the student's id number: ";
-    //make sure to do negative number checking
     while(!valid) {
-        cin >> id;
+        getline(cin, id);
         if(isANumber(&id,false)){
             valid = true;
         } else {
@@ -38,19 +43,26 @@ int main(int argc, char **argv) {
         }
     }
 
+    leadingZeros = leadingZeroCount(&id);
+
     valid = false;
 
+    //Do I need any name error checking?
     cout << "Please enter the student's first name: ";
-    cin >> firstName;
+    getline(cin, firstName);
     cout << "Please enter the student's last name: ";
-    cin >> lastName;
+    getline(cin, lastName);
     cout << "Please enter how many assignments were graded: ";
     while(!valid) {
-        cin >> assignmentCount;
+        getline(cin, assignmentCount);
         if(isANumber(&assignmentCount,false)){
-            valid = true;
+            if(stoi(assignmentCount)>0) {
+                valid = true;
+            } else {
+                cout << "You must enter an assignment counter larger than 0. Please enter how many assignments were graded:";
+            }
         } else {
-            cout << "Sorry, I can not understand the answer " << assignmentCount << ". Please how many assignments were graded: ";
+            cout << "Sorry, I can not understand the answer " << assignmentCount << ". Please enter how many assignments were graded: ";
         }
     }
 
@@ -65,24 +77,38 @@ int main(int argc, char **argv) {
     // had to google a way to change a string to dec, and for future swapping of string into double
     // http://www.cplusplus.com/reference/string/stoi/
 
-    double assignmentScore;
+    double *scores =  new double[s.n_assignments];
 
-    for(int i=0; i<stoi(assignmentCount); i++){
-        cout << "Please enter grade for assignment " << i << ": ";
-        cin >> assignmentScore;
+    for(int i=1; i<stoi(assignmentCount)+1; i++){
+        cout << "Please enter the grade for assignment " << i << ": ";
         while(!valid) {
-            cin >> assignmentScore;
-            if(isANumber(&assignmentCount,true)){
-                valid = true;
+            getline(cin, assignmentScore);
+            if(isANumber(&assignmentScore,true)){
+                if(stod(assignmentScore)>100){
+                    cout << "Sorry, the score " << assignmentScore << " must be less than 100. " << "Please enter the grade for assignment " << i << ": ";
+                } else {
+                    scores[i - 1] = stod(assignmentScore);
+                    valid = true;
+                }
             } else {
-                cout << "Sorry, I can not understand the answer " << assignmentScore << ". Please enter the student's id number: ";
+                cout << "Sorry, I can not understand the answer " << assignmentScore << ". " << "Please enter the grade for assignment " << i << ": ";
             }
         }
+        valid = false;
     }
 
+    s.grades = scores;
 
-    //CalculateStudentAverage(,&avg);
-    //cout << id << " " << firstName << " " << lastName << " " << assignmentCount << endl;
+    CalculateStudentAverage(&s,&avg);
+    cout << endl;
+    if (s.id == 0) {
+        cout << "Student: " << s.f_name << " " << s.l_name << " [" << leadingZeros << "]" << endl;
+    } else {
+        cout << "Student: " << s.f_name << " " << s.l_name << " [" << leadingZeros << s.id << "]" << endl;
+    }
+    // figured out how to round with this
+    // https://stackoverflow.com/questions/14596236/rounding-to-2-decimal-points
+    cout << "  Average grade: " << fixed << setprecision(1) << floor(avg*10+0.5)/10 ;
     return 0;
 }
 
@@ -90,21 +116,41 @@ bool isANumber(string *input, bool canHaveFrac){
     int periodCount = 0;
     for(int i=0; i<input->length();i++) {
         if(!isdigit(input->at(i))){
-            if(input->at(i)=='.' && periodCount == 0 && canHaveFrac){
+            if(input->at(i)=='.' && periodCount == 0 && canHaveFrac && input->length()>1){
                 periodCount++;
             } else {
                 return false;
             }
         }
     }
+    // the code should never get here, but it is a safe check to have
+    // to catch some one off logic.
+    if(stod(*input)<0){
+        return false;
+    }
     return true;
 }
 
-void CalculateStudentAverage(void *object, double *avg) {
-
+string leadingZeroCount(string *number){
+    string ret;
+    for(int i=0; i<number->length();i++){
+        if(number->at(i)=='0'){
+            ret += "0";
+            if(i+1<number->length()){
+                if(number->at(i+1)!='0'){
+                    return ret;
+                }
+            }
+        }
+    }
+    return ret;
 }
 
-/*int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
-}*/
+void CalculateStudentAverage(void *object, double *avg) {
+    Student student = *(Student*)object;
+    double sum = 0;
+    for(int i=0;i<student.n_assignments;i++) {
+        sum += student.grades[i];
+    }
+    *avg = sum/student.n_assignments;
+}
