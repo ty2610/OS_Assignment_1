@@ -84,6 +84,8 @@ int main(int argc, char **argv) {
         }
     }
 
+    cout << endl;
+
     valid = false;
 
     s.id = stoi(id);
