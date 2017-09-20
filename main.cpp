@@ -46,13 +46,30 @@ int main(int argc, char **argv) {
 
     valid = false;
 
-    // Do I need any name error checking?
-    // might want to make sure they put something in
-    // also might want to strip whitespace
     cout << "Please enter the student's first name: ";
-    getline(cin, firstName);
+    while(!valid) {
+        getline(cin, firstName);
+        if(firstName.length()>0){
+            valid = true;
+        } else {
+            cout << "Sorry, I can not understand that answer. Please enter the student's first name: ";
+        }
+    }
+
+    valid = false;
+
     cout << "Please enter the student's last name: ";
-    getline(cin, lastName);
+    while(!valid){
+        getline(cin, lastName);
+        if(lastName.length()>0){
+            valid = true;
+        } else {
+            cout << "Sorry, I can not understand that answer. Please enter the student's last name: ";
+        }
+    }
+
+    valid = false;
+
     cout << "Please enter how many assignments were graded: ";
     while(!valid) {
         getline(cin, assignmentCount);
@@ -86,7 +103,7 @@ int main(int argc, char **argv) {
             getline(cin, assignmentScore);
             if(isANumber(&assignmentScore,true)){
                 if(stod(assignmentScore)>100){
-                    cout << "Sorry, the score " << assignmentScore << " must be less than 100. " << "Please enter the grade for assignment " << i << ": ";
+                    cout << "Sorry, the score " << assignmentScore << " must be less than or equal to 100. " << "Please enter the grade for assignment " << i << ": ";
                 } else {
                     scores[i - 1] = stod(assignmentScore);
                     valid = true;
@@ -109,7 +126,7 @@ int main(int argc, char **argv) {
     }
     // figured out how to round with this
     // https://stackoverflow.com/questions/14596236/rounding-to-2-decimal-points
-    cout << "  Average grade: " << fixed << setprecision(1) << floor(avg*10+0.5)/10 ;
+    cout << "  Average grade: " << fixed << setprecision(1) << floor(avg*10+0.5)/10 << endl;
     return 0;
 }
 
